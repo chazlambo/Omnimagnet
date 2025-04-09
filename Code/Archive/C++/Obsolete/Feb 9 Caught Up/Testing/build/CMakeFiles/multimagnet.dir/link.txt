@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmultimagnet.a CMakeFiles/multimagnet.dir/multimagnet.cpp.o
+/usr/bin/ranlib libmultimagnet.a

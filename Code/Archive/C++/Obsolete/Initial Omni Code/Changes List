@@ -1,0 +1,31 @@
+Change List:
+
+6/23/20:
+
+	type.hpp:
+		Lines 19-30: Wrote typedef specifiers for variables
+		Question: Line 38: Why is the current here a dipole?
+		Replaced all instances of "posision" with "position"
+
+
+
+	omnimagnet.hpp:
+		Lines 32-42: Replaced variable definitions with type defined aliases
+		Lines 54-69: Replaced function variable definitions with corresponding types
+		Note: I should change either the variable names or the typedef names because it can get pretty 		  confusing.
+		Replaced all instances of "posision" with "position"
+
+
+	omnimagnet.cpp:
+		Line 61: Replaced function variable type with typedefined alias "mapping"
+		Line 84: Replaced function variable type with typedefined alias "current"
+		Line 103: Replaced function variable type and input variable type with corresponding typdefined    			 aliases
+		Line 106: Replaced variable type with corresponding type defined alias.
+		Lines 115-122: Replaced variable types with type defined alias
+		Line 128: Replaced variable types with type defined alias.
+		Replaced all instances of "posision" with "position"
+
+
+	main.cpp:
+		Line 196: Replaced variable type with typedefined alias
+		Replaced all instances of "posision" with "position"

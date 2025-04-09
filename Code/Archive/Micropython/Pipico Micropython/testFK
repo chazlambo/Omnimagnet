@@ -1,0 +1,67 @@
+import machine
+import time
+from OmniArm import *
+
+armInp = 500
+baseInp = 200
+horzInp = 300
+vertInp =  400
+
+arm1_ADC_pose = [armInp, baseInp, horzInp, vertInp]          #=PCF8591(i2c_pose,0x48)
+arm1_ADC_temp = [0,0,0]                                      #=PCF8591(i2c_temp,0x48)
+arm1 = ARM(arm1_ADC_pose, arm1_ADC_temp)
+
+baseMin = 1
+baseMax = 1000
+vertMin = 2
+vertMax = 2000
+horzMin = 3
+horzMax = 3000
+armMin = 4
+armMax = 4000
+
+
+arm1.SetLimits(baseMin, baseMax, vertMin, vertMax, horzMin, horzMax, armMin, armMax)
+
+
+slewMin= 0
+slewMax= 2*math.pi
+heightMin= 0.2
+heightMax= 0.4
+jutMin= 0.1
+jutMax= 0.5
+swivelMin= 0
+swivelMax= 2 * math.pi
+
+arm1.SetMapping(slewMin, slewMax, heightMin, heightMax, jutMin, jutMax, swivelMin, swivelMax)
+
+#print(arm1.calibrate)
+#print(arm1.mapping)
+
+
+from pcf8591 import PCF8591
+sda=machine.Pin(0)
+scl=machine.Pin(1)
+i2c_pose = machine.I2C(0,sda=sda, scl=scl, freq=400000)
+print(i2c_pose)
+print(i2c_pose.scan())
+sda=machine.Pin(2)
+scl=machine.Pin(3)
+i2c_temp =machine.I2C(1,sda=sda, scl=scl, freq=400000)
+print(i2c_temp.scan())
+PC1 = PCF8591(i2c_pose,0x48)
+PC2 = PCF8591(i2c_pose,0x49)
+PC3 = PCF8591(i2c_pose,0x4C)
+PC4 = PCF8591(i2c_pose,0x4D)
+PC5 = PCF8591(i2c_pose,0x4F)
+
+#ADC_POSE_arm1 = PCF8591(i2c_pose,0x48)
+#ADC_TEMP_arm1 = PCF8591(i2c_temp,0x48)
+#ARM arm1 (PCF8591(i2c_pose,0x48), PCF8591(i2c_temp,0x48))
+
+# PC1.write(250)
+# print(PC1.read(0))
+# time.sleep(3)
+# PC1.write(0)
+
+

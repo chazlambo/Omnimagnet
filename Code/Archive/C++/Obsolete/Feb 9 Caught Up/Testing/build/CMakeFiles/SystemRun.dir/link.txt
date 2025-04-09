@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/SystemRun.dir/main.cpp.o -o SystemRun  libomnimagnet.a libtype.a libmultimagnet.a 

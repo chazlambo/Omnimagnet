@@ -1,0 +1,6 @@
+/home/charlie/Desktop/Testing/build/CMakeFiles/edit_cache.dir
+/home/charlie/Desktop/Testing/build/CMakeFiles/SystemRun.dir
+/home/charlie/Desktop/Testing/build/CMakeFiles/multimagnet.dir
+/home/charlie/Desktop/Testing/build/CMakeFiles/rebuild_cache.dir
+/home/charlie/Desktop/Testing/build/CMakeFiles/omnimagnet.dir
+/home/charlie/Desktop/Testing/build/CMakeFiles/type.dir

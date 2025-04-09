@@ -1,0 +1,5 @@
+/home/charlie/Desktop/OmniProjectBack/build/CMakeFiles/rebuild_cache.dir
+/home/charlie/Desktop/OmniProjectBack/build/CMakeFiles/edit_cache.dir
+/home/charlie/Desktop/OmniProjectBack/build/CMakeFiles/SystemRun.dir
+/home/charlie/Desktop/OmniProjectBack/build/CMakeFiles/type.dir
+/home/charlie/Desktop/OmniProjectBack/build/CMakeFiles/omnimagnet.dir

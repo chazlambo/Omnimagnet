@@ -1,0 +1,3 @@
+/home/ashkan/Desktop/charlie/SerialCommunicationTest/build/CMakeFiles/rebuild_cache.dir
+/home/ashkan/Desktop/charlie/SerialCommunicationTest/build/CMakeFiles/ArduinoTest.dir
+/home/ashkan/Desktop/charlie/SerialCommunicationTest/build/CMakeFiles/edit_cache.dir

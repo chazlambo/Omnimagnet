@@ -1,0 +1,2 @@
+/usr/bin/ar qc libomnimagnet.a  CMakeFiles/omnimagnet.dir/omnimagnet.cpp.o
+/usr/bin/ranlib libomnimagnet.a

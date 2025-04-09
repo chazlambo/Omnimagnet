@@ -1,0 +1,6 @@
+/home/ashkan/Desktop/OmniMagnetProjectCameraTracking/build/CMakeFiles/edit_cache.dir
+/home/ashkan/Desktop/OmniMagnetProjectCameraTracking/build/CMakeFiles/SystemRun.dir
+/home/ashkan/Desktop/OmniMagnetProjectCameraTracking/build/CMakeFiles/type.dir
+/home/ashkan/Desktop/OmniMagnetProjectCameraTracking/build/CMakeFiles/rebuild_cache.dir
+/home/ashkan/Desktop/OmniMagnetProjectCameraTracking/build/CMakeFiles/omnimagnet.dir
+/home/ashkan/Desktop/OmniMagnetProjectCameraTracking/build/CMakeFiles/cameratrack.dir
