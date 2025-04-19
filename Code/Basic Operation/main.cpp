@@ -24,6 +24,7 @@ int main () {
         return 1;
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Activating the amplifiers inhibits. Pins are 25&26   --- DON'T MODIFIY ---
     int retval;
@@ -36,7 +37,7 @@ int main () {
     int num_omni = 5;                   // number of omnimagnets using in system. !! REQUIRED UPDATE !!
     std::vector<OmniMagnet> omni_system(num_omni); // defines 3 omnis use omni_system.SetProp(double wire_width, double wire_len_in, double wire_len_mid, double wire_len_out, double core_size, int pinin, int pinmid, int pinout,bool estimate, comedi *D2A).
     
-    omni_system[0].SetProp(1.35/1000.0 , 121, 122, 132, 17, 2, 0, 18, true, D2A); omni_system[0].UpdateMapping();       // Omni #1, left upper 
+    omni_system[0].SetProp(1.35/1000.0 , 121, 122, 132, 17, 2, 0, 18, true, D2A); omni_system[0].UpdateMapping();      // Omni #1, left upper 
     omni_system[1].SetProp(1.35/1000.0 , 121, 122, 132, 17, 3, 11, 19, true, D2A); omni_system[1].UpdateMapping();     // Omni #2, center upper 
     omni_system[2].SetProp(1.35/1000.0 , 121, 122, 132, 17, 4, 12, 20, true, D2A); omni_system[2].UpdateMapping();     // Omni #3, right upper 
     omni_system[3].SetProp(1.35/1000.0 , 121, 122, 132, 17, 5, 13, 21, true, D2A); omni_system[3].UpdateMapping();     // Omni #4, right lower 
