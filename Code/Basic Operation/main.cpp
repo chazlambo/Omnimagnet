@@ -44,35 +44,59 @@ int main () {
     omni_system[4].SetProp(1.35/1000.0 , 121, 122, 132, 17, 6, 14, 22, true, D2A); omni_system[4].UpdateMapping();     // Omni #5, left lower
     // omni_system[5].SetProp(1.35/1000.0 , 121, 122, 132, 17, 7, 15, 23, true, D2A); omni_system[5].UpdateMapping();  // spare (potentially for Super Omni), DON'T TURN ON TILL CONNECTED
 
-    // -- (EXAMPLE) Run Omnimagnet Rotation -- 
-    float dipole_strength = 30;         //[Am^2] dipole strength
-    Eigen::Vector3d dipole_axis;        // dipole inital vector position
-    dipole_axis << 1.0 , 0.0, 0.0;      
-    Eigen::Vector3d rotation_axis;      // rotation axis 
-    rotation_axis << 0.0, 1.0, 0.0; 
-    double freq = 1.0;                  // [Hz] frequency of rotation
-    int run_time = 10;               // [ms] run time of demo 
 
-    // omni_system[3].RotatingDipole(dipole_strength*dipole_axis, -rotation_axis, freq, run_time); // rotates the dipole aling the given axis, with the given frequency for a given duration. (dipole, axis, frequency(Hz), duration(ms))
-    // omni_system[0].RotatingDipole(dipole_strength*dipole_axis, -rotation_axis, freq, run_time); // rotates the dipole aling the given axis, with the given frequency for a given duration. (dipole, axis, frequency(Hz), duration(ms))
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // MAIN EXPERIMENT CODE
+    // --  Run Omnimagnet Rotation -- 
 
-   // ---------------------- // 
+    // Define Rotating Dipole Properties
 
-    // -- (EXAMPLE) Run constant current to Omnimagnet --- 
-    // Eigen::Vector3d current_;
-    // current_<< 0.0, 0.0, 10.0;
-    // omni_system[0].SetCurrent(current_);
-    int a;       //user input turns off demo 
-    std::cin>>a;
+    // Omnimagnet 1 (Left Upper)
+    float dipole_strength_1 = 40;       //[Am^2] dipole strength
+    Eigen::Vector3d dipole_axis_1;      // Dipole Initial Vector Position
+    dipole_axis_1 << 0.0 , 0.0, 1.0;    // (Any axis in XY plane of table is fine)
+    Eigen::Vector3d rotation_axis_1;    // Axis the Dipole Rotates About
+    rotation_axis_1 << 0.0, 1.0, 0.0;   // Z-axis of table
+
+    // Omnimagnet 5 (Left Lower)
+    float dipole_strength_2 = 40;       //[Am^2] dipole strength
+    Eigen::Vector3d dipole_axis_2;      // Dipole Initial Vector Position
+    dipole_axis_2 << 1.0 , 0.0, 0.0;    // (Any axis in XY plane of table is fine)
+    Eigen::Vector3d rotation_axis_2;    // Axis the Dipole Rotates About
+    rotation_axis_2 << 0.0, 0.0, -1.0;  // Z-axis of table
+    
+    // Dipole Rotation Variables
+    double freq = 15.0;                 // [Hz] frequency of rotation
+    int cycle_time = 2000;              // [ms] run time for each cycle in the experiment
+    double test_duration_minutes = 10;  // [min] Duration to run experiment for
+
+    // Run test for duration
+    int num_cycles = round(test_duration_minutes * 60 * 1000 / cycle_time / 2); 
+
+    for(int i = 0; i < num_cycles; i++){
+        // Print Current Cycle
+        std::cout << "\n Cycle: " << i+1 << " / " << num_cycles << "\n";
+
+        // Rotate Magnet 1
+        omni_system[0].RotatingDipole(dipole_strength_1*dipole_axis_1, rotation_axis_1, freq, cycle_time);
+
+        // Rotate Magnet 5
+        omni_system[4].RotatingDipole(dipole_strength_2*dipole_axis_2, rotation_axis_2, freq, cycle_time);
+
+        // Check for user input to end experiment
+        if (!std::cin.eof() && std::cin.peek() != EOF) {
+            std::string dummy;
+            std::getline(std::cin, dummy); // consume whatever was entered
+            std::cout << "\nInput detected. Stopping experiment...\n";
+            break;
+        }
+    }
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    std::cout<<"\nDemo ended!!! Spin Test 3\n";
+    
 
 
     //////////////////////////////////////////////////////////
