@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcameratrack.a  CMakeFiles/cameratrack.dir/cameratrack.cpp.o
+/usr/bin/ranlib libcameratrack.a

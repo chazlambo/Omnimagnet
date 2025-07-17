@@ -106,7 +106,7 @@ int CameraTracker::TempUpdateFrame(){
 
     pCam->BeginAcquisition();
     pResultImage = pCam->GetNextImage();
-    pResultImage->Release();
+    // pResultImage->Release();
     // pCam->EndAcquisition();
     if (pResultImage->IsIncomplete())
         {
@@ -119,7 +119,8 @@ int CameraTracker::TempUpdateFrame(){
         {
             const size_t width = pResultImage->GetWidth();
             const size_t height = pResultImage->GetHeight();
-            pResultImage = pResultImage->Convert(PixelFormat_BGR8, Spinnaker::IPP);
+            Spinnaker::ImagePtr convertedImage = pResultImage->Convert(Spinnaker::PixelFormat_BGR8, Spinnaker::Image::hqLinear);
+            pResultImage = convertedImage;
             unsigned int XPadding = pResultImage->GetXPadding();
             unsigned int YPadding = pResultImage->GetYPadding();
             unsigned int rowsize = pResultImage->GetWidth();
@@ -127,6 +128,7 @@ int CameraTracker::TempUpdateFrame(){
             CurrentImage = cv::Mat(colsize + YPadding, rowsize + XPadding, CV_8UC3, pResultImage->GetData(), pResultImage->GetStride());
             // pResultImage->Release();
         }
+    pResultImage->Release();
     pCam->EndAcquisition(); 
 }
 void CameraTracker::UpdateFrame(){
@@ -159,6 +161,8 @@ int a = TempUpdateFrame();
     //         CurrentImage = cv::Mat(colsize + YPadding, rowsize + XPadding, CV_8UC3, pResultImage->GetData(), pResultImage->GetStride());
     //         // pResultImage->Release();
     //     }
+
+    return;
 };
 
 int CameraTracker::Initial(){

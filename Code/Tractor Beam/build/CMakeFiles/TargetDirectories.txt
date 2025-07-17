@@ -1,0 +1,6 @@
+/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/rebuild_cache.dir
+/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/edit_cache.dir
+/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/SystemRun.dir
+/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/type.dir
+/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/cameratrack.dir
+/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/omnimagnet.dir

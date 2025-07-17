@@ -28,8 +28,9 @@ add_library(
 add_executable(SystemRun main.cpp)
 
 # Include paths
-INCLUDE_DIRECTORIES(/home/ashkan/eigen/source , /usr/local/lib, /usr/include/spinnaker)
+INCLUDE_DIRECTORIES(/home/ashkan/eigen/source /opt/spinnaker/include)
+LINK_DIRECTORIES(/opt/spinnaker/lib)
 
 # Link libraries
-target_link_libraries(cameratrack PRIVATE  "/usr/lib/libSpinnaker.so" ${OpenCV_LIBS})
-target_link_libraries(SystemRun PRIVATE omnimagnet type  cameratrack "/usr/local/lib/libcomedi.a")
+target_link_libraries(cameratrack PRIVATE Spinnaker ${OpenCV_LIBS})
+target_link_libraries(SystemRun PRIVATE omnimagnet type cameratrack "/usr/local/lib/libcomedi.a")
