@@ -1,13 +1,32 @@
 #include <iostream>
 #include <vector>
+#include <thread>
+#include <atomic>
+#include <chrono>
+
+// File Saving
 #include <filesystem>
 #include <fstream>
+
+// Main includes
 #include "omnimagnet.hpp"
 #include "cameracapture.hpp"
 
+using namespace std;
 using namespace Spinnaker;
 using namespace Spinnaker::GenApi;
 using namespace Spinnaker::GenICam;
+using namespace std::filesystem;
+
+
+// Thread Declarations
+std::atomic<bool> stop_requested(false);
+void inputThread();
+void captureThread(CameraCapture& cam,
+                   std::ofstream& image_log_file,
+                   const std::string& experiment_output_dir,
+                   int timelapse_interval_ms);
+
 
 
 int main () {
@@ -28,7 +47,6 @@ int main () {
         comedi_perror("comedi_open");
         return 1;
     }
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Activating the amplifiers inhibits. Pins are 25&26   --- DON'T MODIFIY ---
@@ -58,6 +76,15 @@ int main () {
         getchar();
         return -1;
     }
+
+    // Get Calibration For Camera
+    cv::FileStorage fs("../camera_calibration.xml", cv::FileStorage::READ);
+    cv::Mat K, D;
+    fs["camera_matrix"] >> K;
+    fs["distortion_coefficients"] >> D;
+    fs.release();
+
+    cam.SetUndistortionParameters(K, D);
 
     // Setup for file saving
     std::ofstream image_log_file;
@@ -114,14 +141,17 @@ int main () {
     // DOCUMENT EXPERIMENTAL SETUP
     
     // Get starting timestamp
-            auto start_time = std::chrono::system_clock::now();
-            std::time_t start_time_t = std::chrono::system_clock::to_time_t(start_time);
+    auto start_time = std::chrono::system_clock::now();
+    std::time_t start_time_t = std::chrono::system_clock::to_time_t(start_time);
+
+    // Create output directory
+    string base_output_dir = "../output";
+    string experiment_output_dir = base_output_dir + "/" + experiment_name;
 
     // Saves a .txt file with all the experimental setup variable values for later reference
     if (save_data) {
-        // Create output directory
-        string base_output_dir = "../output";
-        string experiment_output_dir = base_output_dir + "/" + experiment_name;
+        
+        // Create directory
         filesystem::create_directories(experiment_output_dir);
 
         //
@@ -181,7 +211,16 @@ int main () {
     bool early_exit = false;
     int actual_cycles = 0;
 
-    for(int i = 0; i < num_cycles; i++){
+    // Start threads
+    std::thread inputT(inputThread);
+    std::thread captureT(captureThread,
+                     std::ref(cam),
+                     std::ref(image_log_file),
+                     std::ref(experiment_output_dir),
+                     timelapse_interval_ms);
+
+
+    for(int i = 0; i < num_cycles && !stop_requested; i++){
         // Print Current Cycle
         std::cout << "\n Cycle: " << i+1 << " / " << num_cycles << "\n";
 
@@ -191,42 +230,24 @@ int main () {
         // Rotate Magnet 5
         omni_system[4].RotatingDipole(dipole_strength_2*dipole_axis_2, rotation_axis_2, freq, cycle_time);
 
-        // Camera Capture
-        auto now = chrono::steady_clock::now();
-        auto elapsed = chrono::duration_cast<chrono::milliseconds>(now - last_capture).count(); // Get time since last saved photo
-        if (save_data && elapsed >= timelapse_interval_ms) { // If set interval has elapsed, save photo
-
-            // Save image with unique name
-            string filename = experiment_output_dir + "/frame_" + to_string(i) + ".jpg";
-            if (cam.CaptureAndSaveImage(filename)) {
-                cout << "Captured image: " << filename << "\n";
-            } else {
-                cerr << "Image capture failed.\n";
-            }
-            last_capture = now;
-
-            // Save human-readable timestamp to csv
-            std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-            char timebuf[32];
-            std::strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", std::localtime(&now_time));
-            image_log_file << filename << "," << timebuf << "\n";
-        }
-
         // Update experiment data variables
         actual_cycles = i + 1;  // Track how many cycles were actually completed
 
         // Check for user input to end experiment
-        if (!std::cin.eof() && std::cin.peek() != EOF) {
-            std::string dummy;
-            std::getline(std::cin, dummy); // consume whatever was entered
-            std::cout << "\nInput detected. Stopping experiment...\n";
+        if (stop_requested) {
             early_exit = true;
-            break;
-        }
+        break;
+    }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // MAIN LOOP EXIT - SHUTDOWN
+
+    //////////////////////////////////////////////////////////
+    // Join or detach threads
+    stop_requested = true;
+    inputT.join();
+    captureT.join();
 
     //////////////////////////////////////////////////////////
     // Log end of experiment data
@@ -268,4 +289,51 @@ int main () {
     //////////////////////////////////////////////////////////
 
   return 0;
+}
+
+// This thread waits for the user to press Enter to stop the experiment early
+void inputThread() {
+    std::cin.get();         // Blocks until enter is pressed
+    stop_requested = true;  // Signals all threads to stop
+}
+
+// This thread handles background camera capture at a fixed interval
+void captureThread(CameraCapture& cam,
+                   std::ofstream& image_log_file,
+                   const std::string& experiment_output_dir,
+                   int timelapse_interval_ms)
+{
+    int img_id = 0;                                         // Counter for naming files
+    auto last_capture = std::chrono::steady_clock::now();   // Timestamp of last capture
+
+    while (!stop_requested) {
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_capture).count();
+
+        // Check if enough time has passed to take the next image
+        if (elapsed >= timelapse_interval_ms) {
+            // Construct filename
+            std::string filename = experiment_output_dir + "/frame_" + std::to_string(img_id++) + ".jpg";
+            
+            // Try to capture and save the image
+            if (cam.CaptureAndSaveImage(filename)) {
+                std::cout << "Captured image: " << filename << "\n";
+
+                // Timestamp logging
+                std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                char timebuf[32];
+                std::strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", std::localtime(&now_time));
+                image_log_file << filename << "," << timebuf << "\n";
+            } else {
+                std::cerr << "Image capture failed.\n";
+            }
+
+            // Update last capture timestamp
+            last_capture = now;
+        }
+
+        // Sleep briefly to prevent the loop from consuming too much CPU
+        // Set to half the interval time arbitrarily
+        std::this_thread::sleep_for(std::chrono::milliseconds(timelapse_interval_ms/2)); // Avoid tight loop
+    }
 }

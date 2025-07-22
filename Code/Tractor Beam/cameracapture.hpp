@@ -6,6 +6,10 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 
+using namespace Spinnaker;
+using namespace Spinnaker::GenApi;
+using namespace Spinnaker::GenICam;
+
 class CameraCapture {
 public:
     CameraCapture(Spinnaker::CameraPtr pcam);
@@ -19,6 +23,9 @@ private:
     Spinnaker::CameraPtr pCam;           // Pointer to the camera
     Spinnaker::ImagePtr pResultImage;    // Last acquired raw image
     cv::Mat CurrentImage;                // Last converted OpenCV image
+
+    cv::Mat cameraMatrix, distCoeffs;
+    bool useUndistort = false;
 };
 
 

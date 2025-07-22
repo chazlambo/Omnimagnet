@@ -35,6 +35,13 @@ bool CameraCapture::InitializeCamera() {
     }
 }
 
+void CameraCapture::SetUndistortionParameters(const cv::Mat& K, const cv::Mat& D) {
+    cameraMatrix = K.clone();
+    distCoeffs = D.clone();
+    useUndistort = true;
+}
+
+
 bool CameraCapture::CaptureAndSaveImage(const std::string& filename) {
     // Captures a single frame and saves it as an image file
     try {
@@ -48,18 +55,18 @@ bool CameraCapture::CaptureAndSaveImage(const std::string& filename) {
             return false;
         }
 
-        // Convert the raw image to BGR8 format
-        ImagePtr convertedImage = pResultImage->Convert(PixelFormat_BGR8, Spinnaker::IPP);
+        if (useUndistort) {
+            // Convert to OpenCV Mat
+            cv::Mat rawImage(pResultImage->GetHeight(), pResultImage->GetWidth(), CV_8UC1, pResultImage->GetData());
+            cv::Mat undistorted;
+            cv::undistort(rawImage, undistorted, cameraMatrix, distCoeffs);
 
-        // Wrap the image buffer into an OpenCV Mat so we can save it
-        CurrentImage = cv::Mat( convertedImage->GetHeight(), 
-                                convertedImage->GetWidth(),
-                                CV_8UC3, 
-                                convertedImage->GetData(), 
-                                convertedImage->GetStride());
-
-        // Save the file
-        cv::imwrite(filename, CurrentImage);
+            // Save using OpenCV
+            cv::imwrite(filename, undistorted);
+        } else {
+            // Save raw if no undistortion specified
+            pResultImage->Save(filename.c_str());
+        }
 
         // Free the image from the camera buffer
         pResultImage->Release();
