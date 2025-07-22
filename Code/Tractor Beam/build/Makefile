@@ -137,17 +137,17 @@ type/fast:
 .PHONY : type/fast
 
 #=============================================================================
-# Target rules for targets named cameratrack
+# Target rules for targets named cameracapture
 
 # Build rule for target.
-cameratrack: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 cameratrack
-.PHONY : cameratrack
+cameracapture: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cameracapture
+.PHONY : cameracapture
 
 # fast build rule for target.
-cameratrack/fast:
-	$(MAKE) -f CMakeFiles/cameratrack.dir/build.make CMakeFiles/cameratrack.dir/build
-.PHONY : cameratrack/fast
+cameracapture/fast:
+	$(MAKE) -f CMakeFiles/cameracapture.dir/build.make CMakeFiles/cameracapture.dir/build
+.PHONY : cameracapture/fast
 
 #=============================================================================
 # Target rules for targets named omnimagnet
@@ -162,32 +162,32 @@ omnimagnet/fast:
 	$(MAKE) -f CMakeFiles/omnimagnet.dir/build.make CMakeFiles/omnimagnet.dir/build
 .PHONY : omnimagnet/fast
 
-cameratrack.o: cameratrack.cpp.o
+cameracapture.o: cameracapture.cpp.o
 
-.PHONY : cameratrack.o
+.PHONY : cameracapture.o
 
 # target to build an object file
-cameratrack.cpp.o:
-	$(MAKE) -f CMakeFiles/cameratrack.dir/build.make CMakeFiles/cameratrack.dir/cameratrack.cpp.o
-.PHONY : cameratrack.cpp.o
+cameracapture.cpp.o:
+	$(MAKE) -f CMakeFiles/cameracapture.dir/build.make CMakeFiles/cameracapture.dir/cameracapture.cpp.o
+.PHONY : cameracapture.cpp.o
 
-cameratrack.i: cameratrack.cpp.i
+cameracapture.i: cameracapture.cpp.i
 
-.PHONY : cameratrack.i
+.PHONY : cameracapture.i
 
 # target to preprocess a source file
-cameratrack.cpp.i:
-	$(MAKE) -f CMakeFiles/cameratrack.dir/build.make CMakeFiles/cameratrack.dir/cameratrack.cpp.i
-.PHONY : cameratrack.cpp.i
+cameracapture.cpp.i:
+	$(MAKE) -f CMakeFiles/cameracapture.dir/build.make CMakeFiles/cameracapture.dir/cameracapture.cpp.i
+.PHONY : cameracapture.cpp.i
 
-cameratrack.s: cameratrack.cpp.s
+cameracapture.s: cameracapture.cpp.s
 
-.PHONY : cameratrack.s
+.PHONY : cameracapture.s
 
 # target to generate assembly for a file
-cameratrack.cpp.s:
-	$(MAKE) -f CMakeFiles/cameratrack.dir/build.make CMakeFiles/cameratrack.dir/cameratrack.cpp.s
-.PHONY : cameratrack.cpp.s
+cameracapture.cpp.s:
+	$(MAKE) -f CMakeFiles/cameracapture.dir/build.make CMakeFiles/cameracapture.dir/cameracapture.cpp.s
+.PHONY : cameracapture.cpp.s
 
 main.o: main.cpp.o
 
@@ -280,11 +280,11 @@ help:
 	@echo "... edit_cache"
 	@echo "... SystemRun"
 	@echo "... type"
-	@echo "... cameratrack"
+	@echo "... cameracapture"
 	@echo "... omnimagnet"
-	@echo "... cameratrack.o"
-	@echo "... cameratrack.i"
-	@echo "... cameratrack.s"
+	@echo "... cameracapture.o"
+	@echo "... cameracapture.i"
+	@echo "... cameracapture.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

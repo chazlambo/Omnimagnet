@@ -55,7 +55,7 @@ CMAKE_BINARY_DIR = "/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/bu
 # The main recursive "all" target.
 all: CMakeFiles/SystemRun.dir/all
 all: CMakeFiles/type.dir/all
-all: CMakeFiles/cameratrack.dir/all
+all: CMakeFiles/cameracapture.dir/all
 all: CMakeFiles/omnimagnet.dir/all
 
 .PHONY : all
@@ -68,7 +68,7 @@ preinstall:
 # The main recursive "clean" target.
 clean: CMakeFiles/SystemRun.dir/clean
 clean: CMakeFiles/type.dir/clean
-clean: CMakeFiles/cameratrack.dir/clean
+clean: CMakeFiles/cameracapture.dir/clean
 clean: CMakeFiles/omnimagnet.dir/clean
 
 .PHONY : clean
@@ -78,7 +78,7 @@ clean: CMakeFiles/omnimagnet.dir/clean
 
 # All Build rule for target.
 CMakeFiles/SystemRun.dir/all: CMakeFiles/type.dir/all
-CMakeFiles/SystemRun.dir/all: CMakeFiles/cameratrack.dir/all
+CMakeFiles/SystemRun.dir/all: CMakeFiles/cameracapture.dir/all
 CMakeFiles/SystemRun.dir/all: CMakeFiles/omnimagnet.dir/all
 	$(MAKE) -f CMakeFiles/SystemRun.dir/build.make CMakeFiles/SystemRun.dir/depend
 	$(MAKE) -f CMakeFiles/SystemRun.dir/build.make CMakeFiles/SystemRun.dir/build
@@ -130,31 +130,31 @@ CMakeFiles/type.dir/clean:
 .PHONY : CMakeFiles/type.dir/clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/cameratrack.dir
+# Target rules for target CMakeFiles/cameracapture.dir
 
 # All Build rule for target.
-CMakeFiles/cameratrack.dir/all:
-	$(MAKE) -f CMakeFiles/cameratrack.dir/build.make CMakeFiles/cameratrack.dir/depend
-	$(MAKE) -f CMakeFiles/cameratrack.dir/build.make CMakeFiles/cameratrack.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles" --progress-num=3,4 "Built target cameratrack"
-.PHONY : CMakeFiles/cameratrack.dir/all
+CMakeFiles/cameracapture.dir/all:
+	$(MAKE) -f CMakeFiles/cameracapture.dir/build.make CMakeFiles/cameracapture.dir/depend
+	$(MAKE) -f CMakeFiles/cameracapture.dir/build.make CMakeFiles/cameracapture.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles" --progress-num=3,4 "Built target cameracapture"
+.PHONY : CMakeFiles/cameracapture.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/cameratrack.dir/rule: cmake_check_build_system
+CMakeFiles/cameracapture.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles" 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/cameratrack.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/cameracapture.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles" 0
-.PHONY : CMakeFiles/cameratrack.dir/rule
+.PHONY : CMakeFiles/cameracapture.dir/rule
 
 # Convenience name for target.
-cameratrack: CMakeFiles/cameratrack.dir/rule
+cameracapture: CMakeFiles/cameracapture.dir/rule
 
-.PHONY : cameratrack
+.PHONY : cameracapture
 
 # clean rule for target.
-CMakeFiles/cameratrack.dir/clean:
-	$(MAKE) -f CMakeFiles/cameratrack.dir/build.make CMakeFiles/cameratrack.dir/clean
-.PHONY : CMakeFiles/cameratrack.dir/clean
+CMakeFiles/cameracapture.dir/clean:
+	$(MAKE) -f CMakeFiles/cameracapture.dir/build.make CMakeFiles/cameracapture.dir/clean
+.PHONY : CMakeFiles/cameracapture.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/omnimagnet.dir

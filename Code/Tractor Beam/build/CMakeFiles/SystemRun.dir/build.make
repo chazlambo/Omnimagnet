@@ -81,8 +81,9 @@ SystemRun: CMakeFiles/SystemRun.dir/main.cpp.o
 SystemRun: CMakeFiles/SystemRun.dir/build.make
 SystemRun: libomnimagnet.a
 SystemRun: libtype.a
-SystemRun: libcameratrack.a
-SystemRun: /usr/local/lib/libcomedi.a
+SystemRun: libcameracapture.a
+SystemRun: /usr/lib/libcomedi.so
+SystemRun: /opt/spinnaker/lib/libSpinnaker.so
 SystemRun: /usr/lib/x86_64-linux-gnu/libopencv_stitching.so.4.2.0
 SystemRun: /usr/lib/x86_64-linux-gnu/libopencv_aruco.so.4.2.0
 SystemRun: /usr/lib/x86_64-linux-gnu/libopencv_bgsegm.so.4.2.0

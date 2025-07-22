@@ -10,6 +10,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "/usr/include/opencv4"
   "/home/ashkan/eigen/source"
   "/opt/spinnaker/include"
   )
@@ -18,7 +19,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 set(CMAKE_TARGET_LINKED_INFO_FILES
   "/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/omnimagnet.dir/DependInfo.cmake"
   "/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/type.dir/DependInfo.cmake"
-  "/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/cameratrack.dir/DependInfo.cmake"
+  "/home/ashkan/Desktop/charlie/Omnimagnet/Code/Tractor Beam/build/CMakeFiles/cameracapture.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.
