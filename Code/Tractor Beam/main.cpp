@@ -1,10 +1,9 @@
 #include <iostream>
-
 #include <vector>
+#include <filesystem>
+#include <fstream>
 #include "omnimagnet.hpp"
-
-#include "cameratrack.hpp"
-
+#include "cameracapture.hpp"
 
 using namespace Spinnaker;
 using namespace Spinnaker::GenApi;
@@ -60,24 +59,8 @@ int main () {
         return -1;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////
-    // Defining the cameras
-    std::cout << "Setup target tracking";
-    Eigen::Vector3d targetPose;
-    CameraTracker camTrack1(camList.GetByIndex(0), targetPose, 1, 30.0, "../camera_calibration.xml"); //Defines a tracker with a given camera * and 3 IDs for coordinate frame and an ID for the target and address to the calibration file,  
-    cv::Mat Image = camTrack1.GetCurrentFrame();
-    for (int i = 0; i<30; i++){
-      camTrack1.UpdateTargetPose();
-      // std::chrono::seconds dura( 1);
-      // std::this_thread::sleep_for( dura );
-    }
-
-    // Test/Example Camera function
-    bool target_marker = true;     //Show target marker
-    bool origin_markers = false;   //Show orgin outlines 
-    camTrack1.SaveCurrentFrame("frame.jpg",target_marker,origin_markers);
-    std::cout << "\nTarget Position:\n" << camTrack1.GetTargetLocation() << "\n"; // print target location 
-    std::cout << "\nTarget Orientation:\n" << camTrack1.GetTargetOrientaion() << "\n"; // print target location 
+    // Setup for file saving
+    std::ofstream image_log_file;
 
     /////////////////////////////////////////////////////////////////////////////////
     //Defining the Omni_magnet system
@@ -93,19 +76,16 @@ int main () {
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // MAIN EXPERIMENT CODE
-    // --  Run Omnimagnet Rotation -- 
+    // MAIN EXPERIMENTAL SETUP
 
-    // Define Rotating Dipole Properties
-
-    // Omnimagnet 1 (Left Upper)
+    // Omnimagnet 1 Properties (Left Upper)
     float dipole_strength_1 = 40;       //[Am^2] dipole strength
     Eigen::Vector3d dipole_axis_1;      // Dipole Initial Vector Position
     dipole_axis_1 << 0.0 , 0.0, 1.0;    // (Any axis in XY plane of table is fine)
     Eigen::Vector3d rotation_axis_1;    // Axis the Dipole Rotates About
     rotation_axis_1 << 0.0, 1.0, 0.0;   // Z-axis of table
 
-    // Omnimagnet 5 (Left Lower)
+    // Omnimagnet 5 Properties (Left Lower)
     float dipole_strength_2 = 40;       //[Am^2] dipole strength
     Eigen::Vector3d dipole_axis_2;      // Dipole Initial Vector Position
     dipole_axis_2 << 1.0 , 0.0, 0.0;    // (Any axis in XY plane of table is fine)
@@ -116,9 +96,90 @@ int main () {
     double freq = 15.0;                 // [Hz] frequency of rotation
     int cycle_time = 2000;              // [ms] run time for each cycle in the experiment
     double test_duration_minutes = 10;  // [min] Duration to run experiment for
-
-    // Run test for duration
     int num_cycles = round(test_duration_minutes * 60 * 1000 / cycle_time / 2); 
+
+    // Timelapse Settings
+    bool save_data = true;                      // Toggle timelapse
+    int timelapse_interval_ms = cycle_time*2;   // Time between photos [ms] (NOTE: Min interval is 2*cycle_time due to loop setup)
+    string experiment_name = "test_exp_01";     // Creates subfolder in /output
+
+    // If camera enabled
+    CameraCapture cam(camList.GetByIndex(0));
+    if (save_data && !cam.InitializeCamera()) {
+        cerr << "Failed to initialize camera.\n";
+        return -1;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // DOCUMENT EXPERIMENTAL SETUP
+    
+    // Get starting timestamp
+            auto start_time = std::chrono::system_clock::now();
+            std::time_t start_time_t = std::chrono::system_clock::to_time_t(start_time);
+
+    // Saves a .txt file with all the experimental setup variable values for later reference
+    if (save_data) {
+        // Create output directory
+        string base_output_dir = "../output";
+        string experiment_output_dir = base_output_dir + "/" + experiment_name;
+        filesystem::create_directories(experiment_output_dir);
+
+        //
+        image_log_file.open(experiment_output_dir + "/image_log.csv");
+        if (!image_log_file.is_open()) {
+            std::cerr << "Failed to open image_log.csv\n";
+        } else {
+            image_log_file << "filename,timestamp\n";
+        }
+
+        // Build metadata filename
+        string setup_filename = experiment_output_dir + "/" + experiment_name + "_setup_info.txt";
+        ofstream setup_file(setup_filename);
+
+        // Get start time
+
+        if (setup_file.is_open()) {
+            // Starting Timestamp
+            setup_file << "// Experiment Start Time: " << std::ctime(&start_time_t) << "\n";
+
+            // Omnimagnet 1 Properties (Left Upper)
+            setup_file << "// Omnimagnet 1 Properties (Left Upper)\n";
+            setup_file << "float dipole_strength_1 = " << dipole_strength_1 << ";\n";
+            setup_file << "Eigen::Vector3d dipole_axis_1 = [" << dipole_axis_1.transpose() << "];\n";
+            setup_file << "Eigen::Vector3d rotation_axis_1 = [" << rotation_axis_1.transpose() << "];\n\n";
+
+            // Omnimagnet 5 Properties (Left Lower)
+            setup_file << "// Omnimagnet 5 Properties (Left Lower)\n";
+            setup_file << "float dipole_strength_2 = " << dipole_strength_2 << ";\n";
+            setup_file << "Eigen::Vector3d dipole_axis_2 = [" << dipole_axis_2.transpose() << "];\n";
+            setup_file << "Eigen::Vector3d rotation_axis_2 = [" << rotation_axis_2.transpose() << "];\n\n";
+
+            // Dipole Rotation Variables
+            setup_file << "// Dipole Rotation Variables\n";
+            setup_file << "double freq = " << freq << ";\n";
+            setup_file << "int cycle_time = " << cycle_time << ";\n";
+            setup_file << "double test_duration_minutes = " << test_duration_minutes << ";\n";
+            setup_file << "int num_cycles = " << num_cycles << ";\n\n";
+
+            // If camera enabled
+            setup_file << "// Timelapse Settings\n";
+            setup_file << "bool save_data = true;\n";
+            setup_file << "int timelapse_interval_ms = " << timelapse_interval_ms << ";\n";
+            setup_file << "string experiment_name = \"" << experiment_name << "\";\n";
+
+            setup_file.close();
+        } else {
+            cerr << "Failed to create " << setup_filename << "\n";
+        }
+    }
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // MAIN EXPERIMENTAL LOOP
+    static auto last_capture = chrono::steady_clock::now();
+
+    // Experiment tracking variables
+    bool early_exit = false;
+    int actual_cycles = 0;
 
     for(int i = 0; i < num_cycles; i++){
         // Print Current Cycle
@@ -130,24 +191,67 @@ int main () {
         // Rotate Magnet 5
         omni_system[4].RotatingDipole(dipole_strength_2*dipole_axis_2, rotation_axis_2, freq, cycle_time);
 
+        // Camera Capture
+        auto now = chrono::steady_clock::now();
+        auto elapsed = chrono::duration_cast<chrono::milliseconds>(now - last_capture).count(); // Get time since last saved photo
+        if (save_data && elapsed >= timelapse_interval_ms) { // If set interval has elapsed, save photo
+
+            // Save image with unique name
+            string filename = experiment_output_dir + "/frame_" + to_string(i) + ".jpg";
+            if (cam.CaptureAndSaveImage(filename)) {
+                cout << "Captured image: " << filename << "\n";
+            } else {
+                cerr << "Image capture failed.\n";
+            }
+            last_capture = now;
+
+            // Save human-readable timestamp to csv
+            std::time_t now_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            char timebuf[32];
+            std::strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", std::localtime(&now_time));
+            image_log_file << filename << "," << timebuf << "\n";
+        }
+
+        // Update experiment data variables
+        actual_cycles = i + 1;  // Track how many cycles were actually completed
+
         // Check for user input to end experiment
         if (!std::cin.eof() && std::cin.peek() != EOF) {
             std::string dummy;
             std::getline(std::cin, dummy); // consume whatever was entered
             std::cout << "\nInput detected. Stopping experiment...\n";
+            early_exit = true;
             break;
         }
     }
 
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    
-
+    // MAIN LOOP EXIT - SHUTDOWN
 
     //////////////////////////////////////////////////////////
-    // Shutting down the system:  --- DON'T MODIFIY ---
+    // Log end of experiment data
+    auto end_time = std::chrono::system_clock::now();
+    std::chrono::duration<double> total_duration = end_time - start_time;
+
+    std::ofstream summary_file(experiment_output_dir + "/experiment_summary.txt");
+    if (summary_file.is_open()) {
+        summary_file << "Total Duration: " << total_duration.count() << " seconds\n";
+        summary_file << "Experiment exited early: " << (early_exit ? "Yes" : "No") << "\n";
+        summary_file << "Cycles completed: " << actual_cycles << " / " << num_cycles << "\n";
+        summary_file.close();
+    } else {
+        std::cerr << "Failed to write experiment_summary.txt\n";
+    }
+
+    //////////////////////////////////////////////////////////
+    // Shutting down the camera system:
+    if (save_data) {
+        cam.ReleaseCamera();
+        image_log_file.close();
+    }
+
+    //////////////////////////////////////////////////////////
+    // Shutting down the omnimagnet system:  --- DON'T MODIFIY ---
     Eigen::Vector3d off;
     off << 0.0, 0.0, 0.0;
     for (auto &omni : omni_system) // access by reference to avoid copying
@@ -162,7 +266,6 @@ int main () {
     retval = comedi_data_write(D2A, subdev, 26, 0, AREF_GROUND, 16383.0*2/4);
     std::cout<<retval;
     //////////////////////////////////////////////////////////
-
 
   return 0;
 }
