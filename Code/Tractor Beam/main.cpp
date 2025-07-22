@@ -77,15 +77,6 @@ int main () {
         return -1;
     }
 
-    // Get Calibration For Camera
-    cv::FileStorage fs("../camera_calibration.xml", cv::FileStorage::READ);
-    cv::Mat K, D;
-    fs["camera_matrix"] >> K;
-    fs["distortion_coefficients"] >> D;
-    fs.release();
-
-    cam.SetUndistortionParameters(K, D);
-
     // Setup for file saving
     std::ofstream image_log_file;
 
@@ -127,7 +118,7 @@ int main () {
 
     // Timelapse Settings
     bool save_data = true;                      // Toggle timelapse
-    int timelapse_interval_ms = cycle_time*2;   // Time between photos [ms] (NOTE: Min interval is 2*cycle_time due to loop setup)
+    int timelapse_interval_ms = 3000;           // Time between photos [ms]
     string experiment_name = "test_exp_01";     // Creates subfolder in /output
 
     // If camera enabled
@@ -155,7 +146,7 @@ int main () {
         filesystem::create_directories(experiment_output_dir);
 
         //
-        image_log_file.open(experiment_output_dir + "/image_log.csv");
+        image_log_file.open(experiment_output_dir + "/" + experiment_name + "_image_log.csv");
         if (!image_log_file.is_open()) {
             std::cerr << "Failed to open image_log.csv\n";
         } else {
@@ -254,7 +245,7 @@ int main () {
     auto end_time = std::chrono::system_clock::now();
     std::chrono::duration<double> total_duration = end_time - start_time;
 
-    std::ofstream summary_file(experiment_output_dir + "/experiment_summary.txt");
+    std::ofstream summary_file(experiment_output_dir + "/" + experiment_name +  "_experiment_summary.txt");
     if (summary_file.is_open()) {
         summary_file << "Total Duration: " << total_duration.count() << " seconds\n";
         summary_file << "Experiment exited early: " << (early_exit ? "Yes" : "No") << "\n";

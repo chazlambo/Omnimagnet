@@ -23,9 +23,6 @@ private:
     Spinnaker::CameraPtr pCam;           // Pointer to the camera
     Spinnaker::ImagePtr pResultImage;    // Last acquired raw image
     cv::Mat CurrentImage;                // Last converted OpenCV image
-
-    cv::Mat cameraMatrix, distCoeffs;
-    bool useUndistort = false;
 };
 
 

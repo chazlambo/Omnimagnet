@@ -35,13 +35,6 @@ bool CameraCapture::InitializeCamera() {
     }
 }
 
-void CameraCapture::SetUndistortionParameters(const cv::Mat& K, const cv::Mat& D) {
-    cameraMatrix = K.clone();
-    distCoeffs = D.clone();
-    useUndistort = true;
-}
-
-
 bool CameraCapture::CaptureAndSaveImage(const std::string& filename) {
     // Captures a single frame and saves it as an image file
     try {
@@ -54,19 +47,9 @@ bool CameraCapture::CaptureAndSaveImage(const std::string& filename) {
                       << Image::GetImageStatusDescription(pResultImage->GetImageStatus()) << std::endl;
             return false;
         }
-
-        if (useUndistort) {
-            // Convert to OpenCV Mat
-            cv::Mat rawImage(pResultImage->GetHeight(), pResultImage->GetWidth(), CV_8UC1, pResultImage->GetData());
-            cv::Mat undistorted;
-            cv::undistort(rawImage, undistorted, cameraMatrix, distCoeffs);
-
-            // Save using OpenCV
-            cv::imwrite(filename, undistorted);
-        } else {
-            // Save raw if no undistortion specified
-            pResultImage->Save(filename.c_str());
-        }
+    
+        // Save raw if no undistortion specified
+        pResultImage->Save(filename.c_str());
 
         // Free the image from the camera buffer
         pResultImage->Release();
