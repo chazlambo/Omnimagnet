@@ -113,13 +113,13 @@ int main () {
     // Dipole Rotation Variables
     double freq = 15.0;                 // [Hz] frequency of rotation
     int cycle_time = 2000;              // [ms] run time for each cycle in the experiment
-    double test_duration_minutes = 10;  // [min] Duration to run experiment for
+    double test_duration_minutes = 15;  // [min] Duration to run experiment for
     int num_cycles = round(test_duration_minutes * 60 * 1000 / cycle_time / 2); 
 
     // Timelapse Settings
     bool save_data = true;                      // Toggle timelapse
-    int timelapse_interval_ms = 3000;           // Time between photos [ms]
-    string experiment_name = "test_exp_01";     // Creates subfolder in /output
+    int timelapse_interval_ms = 2000;           // Time between photos [ms]
+    string experiment_name = "test_exp_05";     // Creates subfolder in /output
 
     // If camera enabled
     CameraCapture cam(camList.GetByIndex(0));
@@ -237,7 +237,7 @@ int main () {
     //////////////////////////////////////////////////////////
     // Join or detach threads
     stop_requested = true;
-    inputT.join();
+    inputT.detach();
     captureT.join();
 
     //////////////////////////////////////////////////////////
