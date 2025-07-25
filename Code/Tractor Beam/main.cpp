@@ -24,7 +24,7 @@ std::atomic<bool> stop_requested(false);
 void inputThread();
 void captureThread(CameraCapture& cam,
                    std::ofstream& image_log_file,
-                   const std::string& experiment_output_dir,
+                   const std::string& image_output_dir,
                    int timelapse_interval_ms);
 
 
@@ -119,7 +119,7 @@ int main () {
     // Timelapse Settings
     bool save_data = true;                      // Toggle timelapse
     int timelapse_interval_ms = 2000;           // Time between photos [ms]
-    string experiment_name = "test_exp_05";     // Creates subfolder in /output
+    string experiment_name = "experiment_E2";   // Creates subfolder in /output
 
     // If camera enabled
     CameraCapture cam(camList.GetByIndex(0));
@@ -138,12 +138,16 @@ int main () {
     // Create output directory
     string base_output_dir = "../output";
     string experiment_output_dir = base_output_dir + "/" + experiment_name;
+    string image_output_dir = experiment_output_dir + "/images";
+
+
 
     // Saves a .txt file with all the experimental setup variable values for later reference
     if (save_data) {
         
         // Create directory
         filesystem::create_directories(experiment_output_dir);
+        filesystem::create_directories(image_output_dir);
 
         //
         image_log_file.open(experiment_output_dir + "/" + experiment_name + "_image_log.csv");
@@ -207,7 +211,7 @@ int main () {
     std::thread captureT(captureThread,
                      std::ref(cam),
                      std::ref(image_log_file),
-                     std::ref(experiment_output_dir),
+                     std::ref(image_output_dir),
                      timelapse_interval_ms);
 
 
@@ -291,7 +295,7 @@ void inputThread() {
 // This thread handles background camera capture at a fixed interval
 void captureThread(CameraCapture& cam,
                    std::ofstream& image_log_file,
-                   const std::string& experiment_output_dir,
+                   const std::string& image_output_dir,
                    int timelapse_interval_ms)
 {
     int img_id = 0;                                         // Counter for naming files
@@ -304,7 +308,7 @@ void captureThread(CameraCapture& cam,
         // Check if enough time has passed to take the next image
         if (elapsed >= timelapse_interval_ms) {
             // Construct filename
-            std::string filename = experiment_output_dir + "/frame_" + std::to_string(img_id++) + ".jpg";
+            std::string filename = image_output_dir + "/frame_" + std::to_string(img_id++) + ".jpg";
             
             // Try to capture and save the image
             if (cam.CaptureAndSaveImage(filename)) {
