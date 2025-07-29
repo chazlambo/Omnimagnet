@@ -1,0 +1,22 @@
+// Experiment Start Time: Tue Jul 29 13:27:40 2025
+
+// Omnimagnet 1 Properties (Left Upper)
+float dipole_strength_1 = 40;
+Eigen::Vector3d dipole_axis_1 = [0 0 1];
+Eigen::Vector3d rotation_axis_1 = [0 1 0];
+
+// Omnimagnet 5 Properties (Left Lower)
+float dipole_strength_2 = 40;
+Eigen::Vector3d dipole_axis_2 = [1 0 0];
+Eigen::Vector3d rotation_axis_2 = [ 0  0 -1];
+
+// Dipole Rotation Variables
+double freq = 15;
+int cycle_time = 2000;
+double test_duration_minutes = 15;
+int num_cycles = 225;
+
+// Timelapse Settings
+bool save_data = true;
+int timelapse_interval_ms = 2000;
+string experiment_name = "experiment_F3";
