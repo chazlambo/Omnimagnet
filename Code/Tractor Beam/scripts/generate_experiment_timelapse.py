@@ -6,7 +6,7 @@ from glob import glob
 from scipy.optimize import linear_sum_assignment
 
 # ====== VIDEO CONFIGURATION ======
-EXPERIMENT_NAME = "experiment_E2"
+EXPERIMENT_NAME = "experiment_G2"
 IMAGE_VERSION = "tracked"               # Options: raw, undistorted, cropped, tracked
 SPEEDUP_FACTOR = 30                     # E.g. 60 means 60x faster than real time
 DELETE_INTERMEDIATE = True              # Deletes all intermediary images generated to create timelapse
