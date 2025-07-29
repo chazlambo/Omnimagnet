@@ -23,6 +23,20 @@ bool CameraCapture::InitializeCamera() {
         CEnumEntryPtr ptrContinuous = ptrAcquisitionMode->GetEntryByName("Continuous"); // Continuos so we can grab frames in a loop
         ptrAcquisitionMode->SetIntValue(ptrContinuous->GetValue());
 
+        // Set pixel format to RGB8 explicitly
+        CEnumerationPtr ptrPixelFormat = nodeMap.GetNode("PixelFormat");
+        if (IsAvailable(ptrPixelFormat) && IsWritable(ptrPixelFormat)) {
+            CEnumEntryPtr ptrRGB8 = ptrPixelFormat->GetEntryByName("RGB8");
+            if (IsAvailable(ptrRGB8) && IsReadable(ptrRGB8)) {
+                ptrPixelFormat->SetIntValue(ptrRGB8->GetValue());
+                std::cout << "Pixel format set to RGB8.\n";
+            } else {
+                std::cerr << "RGB8 format not available or not readable.\n";
+            }
+        } else {
+            std::cerr << "PixelFormat not available or not writable.\n";
+        }
+
         // Start acquiring images
         pCam->BeginAcquisition();
 

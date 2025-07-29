@@ -308,7 +308,9 @@ void captureThread(CameraCapture& cam,
         // Check if enough time has passed to take the next image
         if (elapsed >= timelapse_interval_ms) {
             // Construct filename
-            std::string filename = image_output_dir + "/frame_" + std::to_string(img_id++) + ".jpg";
+            char buffer[32];
+            std::snprintf(buffer, sizeof(buffer), "/frame_%04d.jpg", img_id++);
+            std::string filename = image_output_dir + buffer;
             
             // Try to capture and save the image
             if (cam.CaptureAndSaveImage(filename)) {
