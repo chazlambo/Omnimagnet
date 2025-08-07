@@ -1,0 +1,3 @@
+Total Duration: 200.009 seconds
+Experiment exited early: Yes
+Cycles completed: 50 / 225
