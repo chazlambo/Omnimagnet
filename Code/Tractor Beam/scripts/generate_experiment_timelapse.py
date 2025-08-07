@@ -6,7 +6,7 @@ from glob import glob
 from scipy.optimize import linear_sum_assignment
 
 # ====== VIDEO CONFIGURATION ======
-EXPERIMENT_NAME = "experiment_D3"
+EXPERIMENT_NAME = "experiment_H3"
 IMAGE_VERSION = "tracked"               # Options: raw, undistorted, cropped, trackedB
 SPEEDUP_FACTOR = 30                     # E.g. 60 means 60x faster than real time
 DELETE_INTERMEDIATE = False             # Deletes all intermediary images generated to create timelapse
@@ -23,7 +23,7 @@ RAFT_RADIUS_PX = 32                    # Approximate expected raft radius in pix
 RADIUS_TOLERANCE = 4                   # Tolerance for raft radius in pixels
 ROI_TOP_LEFT = (70, 130)               # Top left corner of region of interest rectangle
 ROI_BOTTOM_RIGHT = (720, 350)          # Bottom right corner of region of interest rectangle
-SMOOTHING_ALPHA = 0.6                  # 0 = only history, 1 = no smoothing
+SMOOTHING_ALPHA = 0.5                  # 0 = only history, 1 = no smoothing
 TRAIL_DURATION_SEC = 300               # seconds of trail to show
 DRAW_RAFT_OUTLINE = True               # Whether to draw the full circle outline
 TRAIL_THICKNESS = 2                    # Thickness of the trail in pixels
