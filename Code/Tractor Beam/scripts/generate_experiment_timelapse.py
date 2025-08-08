@@ -5,11 +5,44 @@ import shutil
 from glob import glob
 from scipy.optimize import linear_sum_assignment
 
+# ====== EXPERIMENT CONFIGURATION ======
+# Put all the names of experiments you want to process below
+# IMPORTANT: Ensure that all experiments being processed simultaneously have the same number of rafts
+
+# 3 Raft Experiments
+EXPERIMENTS_TO_PROCESS = [
+    "experiment_A1",
+    "experiment_A2",
+    "experiment_B1"
+]
+
+# 2 Raft Experiments
+# EXPERIMENTS_TO_PROCESS = [
+#     "experiment_C1",
+#     "experiment_C2",
+#     "experiment_C3",
+#     "experiment_D1",
+#     "experiment_D2",
+#     "experiment_D3",
+#     "experiment_E1",
+#     "experiment_E2",
+#     "experiment_E3",
+#     "experiment_F1",
+#     "experiment_F2",
+#     "experiment_F3",
+#     "experiment_G1",
+#     "experiment_G2",
+#     "experiment_G3",
+#     "experiment_H1",
+#     "experiment_H2",
+#     "experiment_H3"
+# ]
+
+
 # ====== VIDEO CONFIGURATION ======
-EXPERIMENT_NAME = "experiment_F2"
-IMAGE_VERSION = "tracked"               # Options: raw, undistorted, cropped, trackedB
+IMAGE_VERSION = "tracked"               # Options: raw, undistorted, cropped, tracked
 SPEEDUP_FACTOR = 30                     # E.g. 60 means 60x faster than real time
-DELETE_INTERMEDIATE = False             # Deletes all intermediary images generated to create timelapse
+DELETE_INTERMEDIATE = True             # Deletes all intermediary images generated to create timelapse
 
 # ====== CROP CONFIGURATION ======
 X_CROP = 520                            # X coordinate of top left corner of crop rectangle
@@ -25,7 +58,8 @@ ROI_TOP_LEFT = (70, 130)               # Top left corner of region of interest r
 ROI_BOTTOM_RIGHT = (720, 350)          # Bottom right corner of region of interest rectangle
 SMOOTHING_ALPHA = 0.5                  # 0 = only history, 1 = no smoothing
 TRAIL_DURATION_SEC = 600               # seconds of trail to show
-DRAW_RAFT_OUTLINE = True               # Whether to draw the full circle outline
+DRAW_RAFT_OUTLINE = False               # Whether to draw the full circle outline
+OUTLINE_THICKNESS = 1                  # Thickness of the raft outline in pixels
 TRAIL_THICKNESS = 2                    # Thickness of the trail in pixels
 
 # ========== FUNCTIONS ==========
@@ -115,12 +149,31 @@ def generate_distinct_colors(num_colors):
     
     return colors
 
-def undistort_images(EXPERIMENT_NAME):
+def experiment_exists(experiment_name):
+    """Check if an experiment directory exists and contains images."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    experiment_path = os.path.abspath(os.path.join(script_dir, "..", "output", experiment_name))
+    images_path = os.path.join(experiment_path, "images")
+    
+    if not os.path.exists(experiment_path):
+        return False, f"Experiment directory not found: {experiment_path}"
+    
+    if not os.path.exists(images_path):
+        return False, f"Images directory not found: {images_path}"
+    
+    # Check if there are any frame images
+    frame_images = glob(os.path.join(images_path, "frame_*.jpg"))
+    if not frame_images:
+        return False, f"No frame images found in: {images_path}"
+    
+    return True, f"Found {len(frame_images)} images"
+
+def undistort_images(experiment_name):
     """Remove fisheye distortion from raw images."""
     # Set up input and output paths
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.abspath(os.path.join(script_dir, "..", "output", EXPERIMENT_NAME, "images"))
-    output_path = os.path.join(script_dir, "undistorted", EXPERIMENT_NAME)
+    input_path = os.path.abspath(os.path.join(script_dir, "..", "output", experiment_name, "images"))
+    output_path = os.path.join(script_dir, "undistorted", experiment_name)
     os.makedirs(output_path, exist_ok=True)
 
     # Load camera calibration parameters
@@ -154,19 +207,18 @@ def undistort_images(EXPERIMENT_NAME):
         new_filename = f"{name}_undistorted{ext}"
         out_path = os.path.join(output_path, new_filename)
         cv2.imwrite(out_path, undistorted)
-        print(f"Saved: {out_path}")
 
-    print(f"\nAll images undistorted to: {output_path}")
+    print(f"  - Undistorted {len(image_paths)} images")
 
-def crop_images(EXPERIMENT_NAME):
+def crop_images(experiment_name):
     """Crop images to focus on region of interest."""
     # Get crop dimensions from config
     x, y, w, h = X_CROP, Y_CROP, W_CROP, H_CROP
 
     # Set up paths
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    input_path = os.path.join(script_dir, "undistorted", EXPERIMENT_NAME)
-    output_path = os.path.join(script_dir, "cropped", EXPERIMENT_NAME)
+    input_path = os.path.join(script_dir, "undistorted", experiment_name)
+    output_path = os.path.join(script_dir, "cropped", experiment_name)
     os.makedirs(output_path, exist_ok=True)
 
     # Get all undistorted images
@@ -189,17 +241,16 @@ def crop_images(EXPERIMENT_NAME):
         basename = os.path.basename(img_path).replace("_undistorted", "_cropped")
         out_path = os.path.join(output_path, basename)
         cv2.imwrite(out_path, cropped)
-        print(f"Saved: {out_path}")
 
-    print(f"\nAll images cropped to: {output_path}")
+    print(f"  - Cropped {len(image_paths)} images")
 
 def euclidean(p1, p2):
     """Calculate Euclidean distance between two points."""
     return np.linalg.norm(np.array(p1) - np.array(p2))
 
-def get_timelapse_interval(script_dir, EXPERIMENT_NAME):
+def get_timelapse_interval(script_dir, experiment_name):
     """Get timelapse interval from experiment setup file."""
-    setup_path = os.path.join(script_dir, "..", "output", EXPERIMENT_NAME, f"{EXPERIMENT_NAME}_setup_info.txt")
+    setup_path = os.path.join(script_dir, "..", "output", experiment_name, f"{experiment_name}_setup_info.txt")
     if not os.path.exists(setup_path):
         raise FileNotFoundError(f"Missing setup info file: {setup_path}")
     
@@ -210,11 +261,11 @@ def get_timelapse_interval(script_dir, EXPERIMENT_NAME):
 
     raise ValueError("timelapse_interval_ms not found in setup info.")
 
-def track_and_draw_rafts(EXPERIMENT_NAME):
+def track_and_draw_rafts(experiment_name):
     """Track rafts across frames and draw visualization overlays."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    input_dir = os.path.join(script_dir, "cropped", EXPERIMENT_NAME)
-    output_dir = os.path.join(script_dir, "tracked", EXPERIMENT_NAME)
+    input_dir = os.path.join(script_dir, "cropped", experiment_name)
+    output_dir = os.path.join(script_dir, "tracked", experiment_name)
 
     # Clean and create output directory
     if os.path.exists(output_dir):
@@ -223,10 +274,9 @@ def track_and_draw_rafts(EXPERIMENT_NAME):
 
     # Generate distinct colors for each raft
     colors = generate_distinct_colors(NUM_RAFTS)
-    print(f"Generated {len(colors)} distinct colors for {NUM_RAFTS} rafts")
 
     # Calculate how many frames to show in trail
-    interval_ms = get_timelapse_interval(script_dir, EXPERIMENT_NAME)
+    interval_ms = get_timelapse_interval(script_dir, experiment_name)
     trail_frames = max(1, int(TRAIL_DURATION_SEC * 1000 / interval_ms))
 
     # Get all cropped images
@@ -239,12 +289,12 @@ def track_and_draw_rafts(EXPERIMENT_NAME):
     prev_centroids = []
     prev_velocities = []
     raft_tracks = {i: [] for i in range(NUM_RAFTS)}
+    successful_frames = 0
 
     # Process each frame
     for frame_idx, img_path in enumerate(image_paths):
         img = cv2.imread(img_path)
         if img is None:
-            print(f"Couldn't read {img_path}")
             continue
 
         # Extract region of interest for detection
@@ -274,7 +324,6 @@ def track_and_draw_rafts(EXPERIMENT_NAME):
 
         # Skip frame if we don't detect all rafts
         if len(detections) < NUM_RAFTS:
-            print(f"Frame {frame_idx:04d}: Incomplete detection ({len(detections)}/{NUM_RAFTS} rafts), skipping.")
             continue
 
         # Handle first frame or tracking assignment
@@ -310,7 +359,6 @@ def track_and_draw_rafts(EXPERIMENT_NAME):
             for i in range(NUM_RAFTS):
                 if assigned[i] is None:
                     # Assignment failed - keep previous position
-                    print(f"Frame {frame_idx:04d}: Failed to assign raft {i}, using previous position")
                     new_centroids.append(prev_centroids[i])
                     new_velocities.append(prev_velocities[i])
                     continue
@@ -334,7 +382,7 @@ def track_and_draw_rafts(EXPERIMENT_NAME):
             
             # Draw raft outline if enabled
             if DRAW_RAFT_OUTLINE:
-                cv2.circle(img, (x, y), r, colors[i], 2)
+                cv2.circle(img, (x, y), r, colors[i], OUTLINE_THICKNESS)
             
             # Draw center point
             cv2.circle(img, (x, y), 3, colors[i], -1)
@@ -353,28 +401,29 @@ def track_and_draw_rafts(EXPERIMENT_NAME):
         out_filename = os.path.basename(img_path).replace("_cropped", "_tracked")
         out_path = os.path.join(output_dir, out_filename)
         cv2.imwrite(out_path, img)
+        successful_frames += 1
 
-    print(f"\nTracking complete. Tracked images saved to:\n{output_dir}")
+    print(f"  - Tracked {successful_frames} frames (from {len(image_paths)} total)")
 
-def compile_images_to_video():
+def compile_images_to_video(experiment_name):
     """Compile processed images into a video file."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Determine input directory and file pattern based on processing stage
     if IMAGE_VERSION == "raw":
-        image_dir = os.path.join(script_dir, "..", "output", EXPERIMENT_NAME, "images")
+        image_dir = os.path.join(script_dir, "..", "output", experiment_name, "images")
         pattern = "frame_*.jpg"
     elif IMAGE_VERSION == "undistorted":
-        image_dir = os.path.join(script_dir, "undistorted", EXPERIMENT_NAME)
+        image_dir = os.path.join(script_dir, "undistorted", experiment_name)
         pattern = "frame_*_undistorted.jpg"
     elif IMAGE_VERSION == "cropped":
-        image_dir = os.path.join(script_dir, "cropped", EXPERIMENT_NAME)
+        image_dir = os.path.join(script_dir, "cropped", experiment_name)
         pattern = "frame_*_cropped.jpg"
     elif IMAGE_VERSION == "detected":
-        image_dir = os.path.join(script_dir, "detected", EXPERIMENT_NAME)
+        image_dir = os.path.join(script_dir, "detected", experiment_name)
         pattern = "frame_*_detected.jpg"
     elif IMAGE_VERSION == "tracked":
-        image_dir = os.path.join(script_dir, "tracked", EXPERIMENT_NAME)
+        image_dir = os.path.join(script_dir, "tracked", experiment_name)
         pattern = "frame_*_tracked.jpg"
     else:
         raise ValueError(f"Invalid image version: {IMAGE_VERSION}")
@@ -382,29 +431,35 @@ def compile_images_to_video():
     # Get all matching images
     image_paths = sorted(glob(os.path.join(image_dir, pattern)))
     if not image_paths:
-        raise RuntimeError(f"No images found in {image_dir} matching pattern {pattern}")
+        print(f"  - No images found for video compilation")
+        return False
 
     # Get image dimensions from first frame
     first_image = cv2.imread(image_paths[0])
     if first_image is None:
-        raise RuntimeError(f"Could not load first image: {image_paths[0]}")
+        print(f"  - Could not load first image for video compilation")
+        return False
     height, width = first_image.shape[:2]
 
     # Calculate video frame rate
-    setup_file_path = os.path.join(script_dir, "..", "output", EXPERIMENT_NAME, f"{EXPERIMENT_NAME}_setup_info.txt")
-    interval_ms = parse_timelapse_interval(setup_file_path)
-    real_fps = 1000 / interval_ms
-    output_fps = real_fps * SPEEDUP_FACTOR
+    setup_file_path = os.path.join(script_dir, "..", "output", experiment_name, f"{experiment_name}_setup_info.txt")
+    try:
+        interval_ms = parse_timelapse_interval(setup_file_path)
+        real_fps = 1000 / interval_ms
+        output_fps = real_fps * SPEEDUP_FACTOR
+    except (FileNotFoundError, ValueError) as e:
+        print(f"  - Error getting timelapse interval: {e}")
+        return False
 
     # Create output directory structure
-    experiment_series = extract_experiment_series(EXPERIMENT_NAME)
+    experiment_series = extract_experiment_series(experiment_name)
     videos_root = os.path.abspath(os.path.join(script_dir, "..", "videos"))
     series_dir = os.path.join(videos_root, f"Experiment {experiment_series}")
     experiment_video_dir = os.path.join(series_dir, IMAGE_VERSION.capitalize())
     os.makedirs(experiment_video_dir, exist_ok=True)
 
     # Set up output video path
-    video_filename = f"{EXPERIMENT_NAME}_{IMAGE_VERSION}_{SPEEDUP_FACTOR}x.mp4"
+    video_filename = f"{experiment_name}_{IMAGE_VERSION}_{SPEEDUP_FACTOR}x.mp4"
     video_output_path = os.path.join(experiment_video_dir, video_filename)
 
     # Initialize video writer
@@ -412,57 +467,117 @@ def compile_images_to_video():
     video_writer = cv2.VideoWriter(video_output_path, fourcc, output_fps, (width, height))
     
     if not video_writer.isOpened():
-        raise RuntimeError(f"Failed to initialize video writer for {video_output_path}")
-
-    print(f"Creating video at {output_fps:.2f} fps from {len(image_paths)} frames...")
+        print(f"  - Failed to initialize video writer")
+        return False
 
     # Write all frames to video
+    frames_written = 0
     for path in image_paths:
         frame = cv2.imread(path)
         if frame is None:
-            print(f"Warning: Skipped unreadable frame {path}")
             continue
         video_writer.write(frame)
+        frames_written += 1
 
     video_writer.release()
-    print(f"\nVideo saved to: {video_output_path}")
+    print(f"  - Created video: {video_filename} ({frames_written} frames, {output_fps:.1f} fps)")
+    return True
 
-def clean_intermediates():
+def clean_intermediates(experiment_name):
     """Remove intermediate processing folders to save disk space."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    cleaned_folders = []
     for folder in ["undistorted", "cropped", "tracked"]:
-        folder_path = os.path.join(script_dir, folder, EXPERIMENT_NAME)
+        folder_path = os.path.join(script_dir, folder, experiment_name)
         if os.path.exists(folder_path):
             shutil.rmtree(folder_path)
-            print(f"Cleaned: {folder_path}")
+            cleaned_folders.append(folder)
+    
+    if cleaned_folders:
+        print(f"  - Cleaned intermediate folders: {', '.join(cleaned_folders)}")
+
+def process_single_experiment(experiment_name):
+    """Process a single experiment through the pipeline."""
+    print(f"\n{'='*60}")
+    print(f"Processing: {experiment_name}")
+    print(f"{'='*60}")
+    
+    # Check if experiment exists
+    exists, message = experiment_exists(experiment_name)
+    if not exists:
+        print(f"SKIPPED: {message}")
+        return False
+    
+    print(f"{message}")
+    
+    try:
+        # Define processing pipeline based on desired output
+        stages = {
+            "raw": [],
+            "undistorted": [undistort_images],
+            "cropped": [undistort_images, crop_images],
+            "tracked": [undistort_images, crop_images, track_and_draw_rafts]
+        }
+
+        if IMAGE_VERSION not in stages:
+            print(f"ERROR: Unsupported IMAGE_VERSION: {IMAGE_VERSION}")
+            return False
+
+        # Execute required processing stages
+        for i, stage in enumerate(stages[IMAGE_VERSION], start=1):
+            stage_name = stage.__name__.replace('_', ' ').title()
+            print(f"[{i}/{len(stages[IMAGE_VERSION])}] {stage_name}...")
+            stage(experiment_name)
+
+        # Create final video output
+        print(f"[Final] Compiling video...")
+        success = compile_images_to_video(experiment_name)
+        
+        if not success:
+            print(f"ERROR: Failed to create video")
+            return False
+
+        # Clean up intermediate files if requested
+        if DELETE_INTERMEDIATE and stages[IMAGE_VERSION]:
+            clean_intermediates(experiment_name)
+
+        print(f"SUCCESS: {experiment_name} processing complete")
+        return True
+        
+    except Exception as e:
+        print(f"ERROR: Failed to process {experiment_name}: {str(e)}")
+        return False
+
+def main():
+    """Main function to process multiple experiments."""
+    print("=== Multi-Experiment Raft Timelapse Pipeline ===")
+    print(f"Image Version: {IMAGE_VERSION}")
+    print(f"Speedup Factor: {SPEEDUP_FACTOR}x")
+    print(f"Delete Intermediates: {DELETE_INTERMEDIATE}")
+    print(f"Experiments to process: {len(EXPERIMENTS_TO_PROCESS)}")
+    
+    # Process each experiment
+    successful = 0
+    failed = 0
+    
+    for experiment in EXPERIMENTS_TO_PROCESS:
+        if process_single_experiment(experiment):
+            successful += 1
+        else:
+            failed += 1
+    
+    # Print summary
+    print(f"\n{'='*60}")
+    print("PROCESSING SUMMARY")
+    print(f"{'='*60}")
+    print(f"Successful: {successful}")
+    print(f"Failed: {failed}")
+    print(f"Total: {successful + failed}")
+    
+    if failed > 0:
+        print(f"\n {failed} experiment(s) failed to process. Check the output above for details.")
+    else:
+        print(f"\n All experiments processed successfully!")
 
 if __name__ == "__main__":
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    print("=== Starting Raft Timelapse Pipeline ===")
-
-    # Define processing pipeline based on desired output
-    stages = {
-        "raw": [],
-        "undistorted": [undistort_images],
-        "cropped": [undistort_images, crop_images],
-        "tracked": [undistort_images, crop_images, track_and_draw_rafts]
-    }
-
-    if IMAGE_VERSION not in stages:
-        raise ValueError(f"Unsupported IMAGE_VERSION: {IMAGE_VERSION}")
-
-    # Execute required processing stages
-    for i, stage in enumerate(stages[IMAGE_VERSION], start=1):
-        print(f"\n[{i}/{len(stages[IMAGE_VERSION])}] {stage.__name__.replace('_', ' ').title()}...")
-        stage(EXPERIMENT_NAME)
-
-    # Create final video output
-    print("\n[Final Step] Compiling video...")
-    compile_images_to_video()
-
-    # Clean up intermediate files if requested
-    if DELETE_INTERMEDIATE and stages[IMAGE_VERSION]:
-        print("Cleaning intermediate folders...")
-        clean_intermediates()
-
-    print("\n=== Pipeline Complete ===")
+    main()
