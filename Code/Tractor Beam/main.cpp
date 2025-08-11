@@ -118,8 +118,8 @@ int main () {
 
     // Timelapse Settings
     bool save_data = true;                      // Toggle timelapse
-    int timelapse_interval_ms = 2000;           // Time between photos [ms]
-    string experiment_name = "experiment_B3";   // Creates subfolder in /output
+    int timelapse_interval_ms = 1000;           // Time between photos [ms] (default 2000)
+    string experiment_name = "initialconditions_I1";   // Creates subfolder in /output
 
     // If camera enabled
     CameraCapture cam(camList.GetByIndex(0));
