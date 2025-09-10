@@ -9,40 +9,29 @@ from scipy.optimize import linear_sum_assignment
 # Put all the names of experiments you want to process below
 # IMPORTANT: Ensure that all experiments being processed simultaneously have the same number of rafts
 
-# 3 Raft Experiments
 EXPERIMENTS_TO_PROCESS = [
-    "experiment_A1",
-    "experiment_A2",
-    "experiment_B1"
+    "experiment_A2"
 ]
+
+# 3 Raft Experiments
+# EXPERIMENTS_TO_PROCESS = [
+#     "experiment_A1",
+#     "experiment_B2",
+#     "experiment_B3"
+# ]
 
 # 2 Raft Experiments
 # EXPERIMENTS_TO_PROCESS = [
 #     "experiment_C1",
 #     "experiment_C2",
 #     "experiment_C3",
-#     "experiment_D1",
-#     "experiment_D2",
-#     "experiment_D3",
-#     "experiment_E1",
-#     "experiment_E2",
-#     "experiment_E3",
-#     "experiment_F1",
-#     "experiment_F2",
-#     "experiment_F3",
-#     "experiment_G1",
-#     "experiment_G2",
-#     "experiment_G3",
-#     "experiment_H1",
-#     "experiment_H2",
-#     "experiment_H3"
 # ]
 
 
 # ====== VIDEO CONFIGURATION ======
 IMAGE_VERSION = "tracked"               # Options: raw, undistorted, cropped, tracked
 SPEEDUP_FACTOR = 30                     # E.g. 60 means 60x faster than real time
-DELETE_INTERMEDIATE = True             # Deletes all intermediary images generated to create timelapse
+DELETE_INTERMEDIATE = False             # Deletes all intermediary images generated to create timelapse
 
 # ====== CROP CONFIGURATION ======
 X_CROP = 520                            # X coordinate of top left corner of crop rectangle
@@ -51,14 +40,14 @@ W_CROP = 860                            # Width of crop rectangle
 H_CROP = 460                            # Height of crop rectangle
 
 # ====== TRACKER CONFIGURATION ======
-NUM_RAFTS = 2                          # Number of rafts in experiment
+NUM_RAFTS = 3                          # Number of rafts in experiment
 RAFT_RADIUS_PX = 32                    # Approximate expected raft radius in pixels
 RADIUS_TOLERANCE = 4                   # Tolerance for raft radius in pixels
 ROI_TOP_LEFT = (70, 130)               # Top left corner of region of interest rectangle
 ROI_BOTTOM_RIGHT = (720, 350)          # Bottom right corner of region of interest rectangle
 SMOOTHING_ALPHA = 0.5                  # 0 = only history, 1 = no smoothing
 TRAIL_DURATION_SEC = 600               # seconds of trail to show
-DRAW_RAFT_OUTLINE = False               # Whether to draw the full circle outline
+DRAW_RAFT_OUTLINE = True               # Whether to draw the full circle outline
 OUTLINE_THICKNESS = 1                  # Thickness of the raft outline in pixels
 TRAIL_THICKNESS = 2                    # Thickness of the trail in pixels
 
