@@ -10,7 +10,8 @@ from scipy.optimize import linear_sum_assignment
 # IMPORTANT: Ensure that all experiments being processed simultaneously have the same number of rafts
 
 EXPERIMENTS_TO_PROCESS = [
-    "experiment_A2"
+    "initialconditions_I5",
+    "initialconditions_I6"
 ]
 
 # 3 Raft Experiments
@@ -31,7 +32,7 @@ EXPERIMENTS_TO_PROCESS = [
 # ====== VIDEO CONFIGURATION ======
 IMAGE_VERSION = "tracked"               # Options: raw, undistorted, cropped, tracked
 SPEEDUP_FACTOR = 30                     # E.g. 60 means 60x faster than real time
-DELETE_INTERMEDIATE = False             # Deletes all intermediary images generated to create timelapse
+DELETE_INTERMEDIATE = True             # Deletes all intermediary images generated to create timelapse
 
 # ====== CROP CONFIGURATION ======
 X_CROP = 520                            # X coordinate of top left corner of crop rectangle
@@ -40,7 +41,7 @@ W_CROP = 860                            # Width of crop rectangle
 H_CROP = 460                            # Height of crop rectangle
 
 # ====== TRACKER CONFIGURATION ======
-NUM_RAFTS = 3                          # Number of rafts in experiment
+NUM_RAFTS = 1                          # Number of rafts in experiment
 RAFT_RADIUS_PX = 32                    # Approximate expected raft radius in pixels
 RADIUS_TOLERANCE = 4                   # Tolerance for raft radius in pixels
 ROI_TOP_LEFT = (70, 130)               # Top left corner of region of interest rectangle
