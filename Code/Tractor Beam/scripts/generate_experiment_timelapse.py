@@ -10,8 +10,7 @@ from scipy.optimize import linear_sum_assignment
 # IMPORTANT: Ensure that all experiments being processed simultaneously have the same number of rafts
 
 EXPERIMENTS_TO_PROCESS = [
-    "initialconditions_I5",
-    "initialconditions_I6"
+    "initialconditions_I8"
 ]
 
 # 3 Raft Experiments
@@ -41,7 +40,7 @@ W_CROP = 860                            # Width of crop rectangle
 H_CROP = 460                            # Height of crop rectangle
 
 # ====== TRACKER CONFIGURATION ======
-NUM_RAFTS = 1                          # Number of rafts in experiment
+NUM_RAFTS = 2                          # Number of rafts in experiment
 RAFT_RADIUS_PX = 32                    # Approximate expected raft radius in pixels
 RADIUS_TOLERANCE = 4                   # Tolerance for raft radius in pixels
 ROI_TOP_LEFT = (70, 130)               # Top left corner of region of interest rectangle
