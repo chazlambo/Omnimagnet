@@ -9,10 +9,10 @@ from scipy.optimize import linear_sum_assignment
 # Put all the names of experiments you want to process below
 # IMPORTANT: Ensure that all experiments being processed simultaneously have the same number of rafts
 
-EXPERIMENTS_TO_PROCESS = [
-    "initialconditions_I5",
-    "initialconditions_I6"
-]
+# EXPERIMENTS_TO_PROCESS = [
+#     "initialconditions_I5",
+#     "initialconditions_I6"
+# ]
 
 # 3 Raft Experiments
 # EXPERIMENTS_TO_PROCESS = [
@@ -22,11 +22,11 @@ EXPERIMENTS_TO_PROCESS = [
 # ]
 
 # 2 Raft Experiments
-# EXPERIMENTS_TO_PROCESS = [
-#     "experiment_C1",
-#     "experiment_C2",
-#     "experiment_C3",
-# ]
+EXPERIMENTS_TO_PROCESS = [
+    "experiment_C4",
+    "experiment_C5",
+    "experiment_C6",
+]
 
 
 # ====== VIDEO CONFIGURATION ======
@@ -41,13 +41,13 @@ W_CROP = 860                            # Width of crop rectangle
 H_CROP = 460                            # Height of crop rectangle
 
 # ====== TRACKER CONFIGURATION ======
-NUM_RAFTS = 1                          # Number of rafts in experiment
+NUM_RAFTS = 2                          # Number of rafts in experiment
 RAFT_RADIUS_PX = 32                    # Approximate expected raft radius in pixels
 RADIUS_TOLERANCE = 4                   # Tolerance for raft radius in pixels
 ROI_TOP_LEFT = (70, 130)               # Top left corner of region of interest rectangle
 ROI_BOTTOM_RIGHT = (720, 350)          # Bottom right corner of region of interest rectangle
-SMOOTHING_ALPHA = 0.5                  # 0 = only history, 1 = no smoothing
-TRAIL_DURATION_SEC = 600               # seconds of trail to show
+SMOOTHING_ALPHA = 0.5                  # 0 = only history, 1 = no smoothing (Default 0.5)
+TRAIL_DURATION_SEC = 120               # seconds of trail to show
 DRAW_RAFT_OUTLINE = True               # Whether to draw the full circle outline
 OUTLINE_THICKNESS = 1                  # Thickness of the raft outline in pixels
 TRAIL_THICKNESS = 2                    # Thickness of the trail in pixels
