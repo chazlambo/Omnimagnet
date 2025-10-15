@@ -26,6 +26,9 @@ EXPERIMENTS_TO_PROCESS = [
     "experiment_C4",
     "experiment_C5",
     "experiment_C6",
+    "experiment_H4",
+    "experiment_H5",
+    "experiment_H6",
 ]
 
 
@@ -47,7 +50,7 @@ RADIUS_TOLERANCE = 4                   # Tolerance for raft radius in pixels
 ROI_TOP_LEFT = (70, 130)               # Top left corner of region of interest rectangle
 ROI_BOTTOM_RIGHT = (720, 350)          # Bottom right corner of region of interest rectangle
 SMOOTHING_ALPHA = 0.5                  # 0 = only history, 1 = no smoothing (Default 0.5)
-TRAIL_DURATION_SEC = 120               # seconds of trail to show
+TRAIL_DURATION_SEC = 600               # seconds of trail to show
 DRAW_RAFT_OUTLINE = True               # Whether to draw the full circle outline
 OUTLINE_THICKNESS = 1                  # Thickness of the raft outline in pixels
 TRAIL_THICKNESS = 2                    # Thickness of the trail in pixels
