@@ -35,7 +35,7 @@ EXPERIMENTS_TO_PROCESS = [
 # ====== VIDEO CONFIGURATION ======
 IMAGE_VERSION = "tracked"               # Options: raw, undistorted, cropped, tracked
 SPEEDUP_FACTOR = 30                     # E.g. 60 means 60x faster than real time
-DELETE_INTERMEDIATE = True             # Deletes all intermediary images generated to create timelapse
+DELETE_INTERMEDIATE = False             # Deletes all intermediary images generated to create timelapse
 
 # ====== CROP CONFIGURATION ======
 X_CROP = 520                            # X coordinate of top left corner of crop rectangle
