@@ -23,12 +23,9 @@ EXPERIMENTS_TO_PROCESS = [
 
 # 2 Raft Experiments
 EXPERIMENTS_TO_PROCESS = [
-    "experiment_C4",
-    "experiment_C5",
-    "experiment_C6",
-    "experiment_H4",
-    "experiment_H5",
-    "experiment_H6",
+    "experiment_D4",
+    "experiment_D5",
+    "experiment_D6",
 ]
 
 
