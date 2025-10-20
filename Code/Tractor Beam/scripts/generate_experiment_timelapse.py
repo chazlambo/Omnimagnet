@@ -23,9 +23,9 @@ from scipy.optimize import linear_sum_assignment
 
 # 2 Raft Experiments
 EXPERIMENTS_TO_PROCESS = [
-    "experiment_D4",
-    "experiment_D5",
-    "experiment_D6",
+    "experiment_E4",
+    "experiment_E5",
+    "experiment_E6",
 ]
 
 
