@@ -9,10 +9,10 @@ from scipy.optimize import linear_sum_assignment
 # Put all the names of experiments you want to process below
 # IMPORTANT: Ensure that all experiments being processed simultaneously have the same number of rafts
 
-EXPERIMENTS_TO_PROCESS = [
-    "initialconditions_I5",
-    "initialconditions_I6"
-]
+# EXPERIMENTS_TO_PROCESS = [
+#     "initialconditions_I5",
+#     "initialconditions_I6"
+# ]
 
 # 3 Raft Experiments
 # EXPERIMENTS_TO_PROCESS = [
